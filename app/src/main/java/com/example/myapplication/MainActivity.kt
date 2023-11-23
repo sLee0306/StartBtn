@@ -11,7 +11,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +31,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
 
@@ -57,6 +59,7 @@ class MainActivity : ComponentActivity() {
     private fun StartButton() {
         var isVisible by remember { mutableStateOf(true) }
         var isLoadingVisible by remember { mutableStateOf(false) }
+        val isRoundBtnVisible = remember { mutableStateOf(false) }
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -64,6 +67,7 @@ class MainActivity : ComponentActivity() {
             Button(onClick = {
                 isVisible = true
                 isLoadingVisible = false
+                isRoundBtnVisible.value = false
             }) {
                 Text(text = "Reset")
             }
@@ -88,6 +92,7 @@ class MainActivity : ComponentActivity() {
                             onClick = {
                                 isVisible = false
                                 isLoadingVisible = true
+                                isRoundBtnVisible.value = true
                             }, modifier = Modifier
                                 .fillMaxWidth()
                                 .height(64.dp)
@@ -100,54 +105,60 @@ class MainActivity : ComponentActivity() {
                         ) {
                             Text(text = "Click me", color = MaterialTheme.colorScheme.primary)
                         }
-                        ProgressDialog(isVisible = isLoadingVisible)
+                        ProgressDialog(isLoadingVisible = isLoadingVisible)
                     }
                 }
-                RoundedButton(isVisible = !isVisible)
+                RoundedButton(isRoundBtnVisible = isRoundBtnVisible)
             }
         }
     }
 
     @Composable
-    private fun ProgressDialog(modifier: Modifier = Modifier, isVisible: Boolean) {
-        if (isVisible) {
+    private fun ProgressDialog(
+        modifier: Modifier = Modifier,
+        isLoadingVisible: Boolean
+    ) {
+        if (isLoadingVisible) {
             Box(
-                modifier = modifier
-                    .padding(start = 286.dp, top = 11.dp),
-
-                ) {
+                modifier = modifier.padding(start = 286.dp, top = 11.dp)
+            ) {
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         }
     }
 
     @Composable
-    private fun RoundedButton(modifier: Modifier = Modifier, isVisible: Boolean) {
-        Box(modifier = modifier.padding(horizontal = 10.dp)) {
-            AnimatedVisibility(
-                visible = isVisible,
-                enter = fadeIn(
-                    animationSpec = tween(
-                        durationMillis = 1000,
-                        delayMillis = 3500
-                    )
-                ) + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
+    private fun RoundedButton(
+        modifier: Modifier = Modifier,
+        isRoundBtnVisible: MutableState<Boolean>
+    ) {
+        AnimatedVisibility(
+            visible = isRoundBtnVisible.value,
+            enter = fadeIn(
+                animationSpec = tween(
+                    durationMillis = 1000,
+                    delayMillis = 3500
+                )
+            ) + expandVertically(),
+            exit = fadeOut()
 
+        ) {
+            Button(
+                onClick = { },
+                shape = CircleShape,
+                modifier = modifier.size(56.dp),
+                contentPadding = PaddingValues(1.dp),
+                colors = ButtonDefaults.buttonColors(Color.Green)
             ) {
-                Button(
-                    onClick = { },
-                    shape = CircleShape,
-                    modifier = modifier.size(56.dp),
-                    contentPadding = PaddingValues(1.dp),
-                    colors = ButtonDefaults.buttonColors(Color.Green)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        modifier = Modifier.size(40.dp)
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp)
+                )
+            }
+            LaunchedEffect(key1 = Unit) {
+                delay(6000)
+                isRoundBtnVisible.value = false
             }
         }
     }
