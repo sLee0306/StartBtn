@@ -5,7 +5,6 @@ import android.view.animation.OvershootInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
@@ -49,13 +48,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
-                SuccessScreen()
+                StartButton()
             }
         }
     }
 
     @Composable
-    private fun SuccessScreen() {
+    private fun StartButton() {
         var isVisible by remember { mutableStateOf(true) }
         var isLoadingVisible by remember { mutableStateOf(false) }
         Column(
@@ -143,7 +142,6 @@ class MainActivity : ComponentActivity() {
                     contentPadding = PaddingValues(1.dp),
                     colors = ButtonDefaults.buttonColors(Color.Green)
                 ) {
-                    // Inner content including an icon and a text label
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = null,
