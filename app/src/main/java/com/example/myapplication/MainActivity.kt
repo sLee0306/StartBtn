@@ -11,6 +11,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,8 +22,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Snackbar
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
@@ -36,13 +41,16 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import com.example.myapplication.ui.theme.Background
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -61,8 +69,10 @@ class MainActivity : ComponentActivity() {
         var isLoadingVisible by remember { mutableStateOf(false) }
         val isRoundBtnVisible = remember { mutableStateOf(false) }
         Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Background),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button(onClick = {
                 isVisible = true
@@ -109,6 +119,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 RoundedButton(isRoundBtnVisible = isRoundBtnVisible)
+                ShowSnackBar(isRoundBtnVisible = isRoundBtnVisible)
             }
         }
     }
@@ -159,6 +170,33 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(key1 = Unit) {
                 delay(6000)
                 isRoundBtnVisible.value = false
+            }
+        }
+    }
+
+    @Composable
+    fun ShowSnackBar(isRoundBtnVisible: MutableState<Boolean>) {
+        val snackState = remember { SnackbarHostState() }
+        val snackScope = rememberCoroutineScope()
+
+        SnackbarHost(
+            modifier = Modifier,
+            hostState = snackState
+        ) {
+            Box(contentAlignment = Alignment.TopCenter, modifier = Modifier.fillMaxSize()) {
+                Snackbar(
+                    snackbarData = it,
+                    backgroundColor = Color.White,
+                    contentColor = Color.Black,
+                    modifier = Modifier.width(272.dp)
+                )
+            }
+        }
+
+        if (isRoundBtnVisible.value) {
+            LaunchedEffect(Unit) {
+                delay(3500)
+                snackScope.launch { snackState.showSnackbar("Your ocean is now ready to drive!") }
             }
         }
     }
