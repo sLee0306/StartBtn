@@ -164,7 +164,8 @@ class MainActivity : ComponentActivity() {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(40.dp),
+                    tint = Color.White
                 )
             }
             LaunchedEffect(key1 = Unit) {
